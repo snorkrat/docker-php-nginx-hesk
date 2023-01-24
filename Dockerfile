@@ -3,11 +3,6 @@ FROM alpine:${ALPINE_VERSION}
 LABEL Maintainer="Tim de Pater <code@trafex.nl>"
 LABEL Description="Lightweight container with Nginx 1.22 & PHP 8.1 based on Alpine Linux."
 
-# Add entrypoint script
-ADD entrypoint.sh .
-RUN chmod +x entrypoint.sh
-ENTRYPOINT [ "./entrypoint.sh" ]
-
 # Setup document root
 WORKDIR /var/www/html
 
