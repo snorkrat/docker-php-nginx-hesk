@@ -24,8 +24,10 @@ mv -n /hesk/* /var/www/html/
 
 rm -rf /hesk
 
-echo "Removing Install DIR from web root"
+if [[ $INSTALL_DIR -eq 0 ]]; then
+echo "Removing Install DIR from web root if already present"
 rm -rf /var/www/html/install
+fi
 
 
 exec tail -f /dev/null
