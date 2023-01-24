@@ -4,7 +4,7 @@ LABEL Maintainer="Snorkrat"
 LABEL Description="Lightweight container with Nginx 1.22 & PHP 8.1 based on Alpine Linux and includes HESK web files."
 
 # Setup document root
-WORKDIR /var/www/html
+WORKDIR /
 
 # Install packages and remove default server definition
 RUN \
@@ -38,6 +38,10 @@ RUN \
   usermod -G users abc && \
   mkdir -p \
     /hesk
+
+# Setup document root
+WORKDIR /var/www/html
+
 # Configure nginx - http
 COPY config/nginx.conf /etc/nginx/nginx.conf
 # Configure nginx - default server
@@ -56,9 +60,6 @@ RUN chown -R abc:abc /var/www/html /run /var/lib/nginx /var/log/nginx
 # Switch to use a abc user from here on
 USER abc
 
-# Add application
-COPY --chown=abc src/ /hesk/
-
 # Expose the port nginx is reachable on
 EXPOSE 8080
 
@@ -69,6 +70,8 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
 
 WORKDIR /
+# Add application
+COPY --chown=abc src/ /hesk/
 USER root
 ADD entrypoint.sh .
 RUN chown root:root entrypoint.sh

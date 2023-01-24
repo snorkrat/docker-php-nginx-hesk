@@ -14,6 +14,6 @@ User gid:    $(id -g abc)
 chown abc:abc /var/www/html
 chown abc:abc /hesk
 
-mv -n /hesk/ /var/www/html/
+mv -n /hesk/* /var/www/html/
 
 exec tail -f /dev/null
