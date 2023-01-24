@@ -1,31 +1,41 @@
 ARG ALPINE_VERSION=3.17
 FROM alpine:${ALPINE_VERSION}
-LABEL Maintainer="Tim de Pater <code@trafex.nl>"
-LABEL Description="Lightweight container with Nginx 1.22 & PHP 8.1 based on Alpine Linux."
+LABEL Maintainer="Snorkrat"
+LABEL Description="Lightweight container with Nginx 1.22 & PHP 8.1 based on Alpine Linux and includes HESK web files."
 
 # Setup document root
 WORKDIR /var/www/html
 
 # Install packages and remove default server definition
-RUN apk add --no-cache \
-  curl \
-  nginx \
-  php81 \
-  php81-ctype \
-  php81-curl \
-  php81-dom \
-  php81-fpm \
-  php81-gd \
-  php81-intl \
-  php81-mbstring \
-  php81-mysqli \
-  php81-opcache \
-  php81-openssl \
-  php81-phar \
-  php81-session \
-  php81-xml \
-  php81-xmlreader \
-  supervisor
+RUN \
+  echo "**** install packages ****" && \
+  apk add --no-cache \
+    curl \
+    nginx \
+    php81 \
+    php81-ctype \
+    php81-curl \
+    php81-dom \
+    php81-fpm \
+    php81-gd \
+    php81-intl \
+    php81-mbstring \
+    php81-mysqli \
+    php81-opcache \
+    php81-openssl \
+    php81-phar \
+    php81-session \
+    php81-xml \
+    php81-xmlreader \
+    supervisor \
+    bash \
+    shadow & \
+  echo "**** create abc user and make our folders ****" && \
+  groupmod -g 1000 users && \
+  useradd -u 911 -U -d /config -s /bin/false abc && \
+  usermod -G users abc && \
+  mkdir -p \
+    /config
 
 # Configure nginx - http
 COPY config/nginx.conf /etc/nginx/nginx.conf
@@ -40,13 +50,13 @@ COPY config/php.ini /etc/php81/conf.d/custom.ini
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Make sure files/folders needed by the processes are accessable when they run under the nobody user
-RUN chown -R nobody.nobody /var/www/html /run /var/lib/nginx /var/log/nginx
+RUN chown -R abc:abc /var/www/html /run /var/lib/nginx /var/log/nginx
 
-# Switch to use a non-root user from here on
-USER nobody
+# Switch to use a abc user from here on
+USER abc
 
 # Add application
-COPY --chown=nobody src/ /var/www/html/
+COPY --chown=abc src/ /var/www/html/
 
 # Expose the port nginx is reachable on
 EXPOSE 8080
