@@ -37,7 +37,7 @@ RUN \
   useradd -u 911 -U -d /config -s /bin/false abc && \
   usermod -G users abc && \
   mkdir -p \
-    /config
+    /hesk
 # Configure nginx - http
 COPY config/nginx.conf /etc/nginx/nginx.conf
 # Configure nginx - default server
@@ -57,7 +57,7 @@ RUN chown -R abc:abc /var/www/html /run /var/lib/nginx /var/log/nginx
 USER abc
 
 # Add application
-COPY --chown=abc src/ /var/www/html/
+COPY --chown=abc src/ /hesk/
 
 # Expose the port nginx is reachable on
 EXPOSE 8080
@@ -75,5 +75,5 @@ RUN chown root:root entrypoint.sh
 RUN chmod +x entrypoint.sh
 ENTRYPOINT [ "./entrypoint.sh" ]
 
+USER abc
 VOLUME /var/www/html/
-VOLUME /config
