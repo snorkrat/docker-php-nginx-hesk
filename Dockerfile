@@ -29,14 +29,15 @@ RUN \
     php81-xmlreader \
     supervisor \
     bash \
-    shadow & \
+    shadow
+
+RUN \
   echo "**** create abc user and make our folders ****" && \
   groupmod -g 1000 users && \
   useradd -u 911 -U -d /config -s /bin/false abc && \
   usermod -G users abc && \
   mkdir -p \
     /config
-
 # Configure nginx - http
 COPY config/nginx.conf /etc/nginx/nginx.conf
 # Configure nginx - default server
@@ -67,4 +68,12 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 # Configure a healthcheck to validate that everything is up&running
 HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
 
+WORKDIR /
+USER root
+ADD entrypoint.sh .
+RUN chown root:root entrypoint.sh
+RUN chmod +x entrypoint.sh
+ENTRYPOINT [ "./entrypoint.sh" ]
+
 VOLUME /var/www/html/
+VOLUME /config
