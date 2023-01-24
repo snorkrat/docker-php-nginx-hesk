@@ -75,5 +75,4 @@ RUN chown root:root entrypoint.sh
 RUN chmod +x entrypoint.sh
 ENTRYPOINT [ "./entrypoint.sh" ]
 
-USER abc
 VOLUME /var/www/html/
