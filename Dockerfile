@@ -2,11 +2,14 @@ ARG ALPINE_VERSION=3.17
 FROM alpine:${ALPINE_VERSION}
 LABEL Maintainer="Tim de Pater <code@trafex.nl>"
 LABEL Description="Lightweight container with Nginx 1.22 & PHP 8.1 based on Alpine Linux."
-# Setup document root
-WORKDIR /var/www/html
 
 # Add entrypoint script
 ADD entrypoint.sh .
+
+ENTRYPOINT [ "./entrypoint.sh" ]
+
+# Setup document root
+WORKDIR /var/www/html
 
 # Install packages and remove default server definition
 RUN apk add --no-cache \
@@ -58,5 +61,3 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
 # Configure a healthcheck to validate that everything is up&running
 HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
-
-ENTRYPOINT [ "./entrypoint.sh" ]
